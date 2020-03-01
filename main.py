@@ -14,7 +14,7 @@ Return: None
 def playChess():
     board = chess.Board()
     while True:
-        print(board.unicode())
+        print(board.unicode(invert_color=True))
         flag = False
         while not flag:
             move = input("Make a move (e2e4): ")
@@ -25,7 +25,7 @@ def playChess():
         # TODO: check for valid move
         move = chess.Move.from_uci(str(move))
         board.push(move)
-        print(board.unicode())
+        print(board.unicode(invert_color=True))
         computerMove = tools.startMinimax(board, 4, True)
         computerMove = chess.Move.from_uci(str(computerMove))
         board.push(computerMove)
