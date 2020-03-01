@@ -8,10 +8,10 @@ import sys
 
 """
 Runs the main chess program
-
+depth: the depth of the AI's alpha-beta search
 Return: None
 """
-def playChess():
+def playChess(depth):
     board = chess.Board()
     while True:
         print(board.unicode(invert_color=True))
@@ -26,10 +26,28 @@ def playChess():
         move = chess.Move.from_uci(str(move))
         board.push(move)
         print(board.unicode(invert_color=True))
-        computerMove = tools.startMinimax(board, 4, True)
+        computerMove = tools.startMinimax(board, depth, True)
         computerMove = chess.Move.from_uci(str(computerMove))
         board.push(computerMove)
 
-if __name__=="__main__":
+"""
+Get the depth of the AI, and run program with that depth
+"""
 
-    playChess()
+if __name__=="__main__":
+    flag = False
+    while not flag:
+        try:
+            if len(sys.argv) > 1:
+                depth = int(sys.argv[1])
+                break
+            else:
+                depth = int(input("Enter the depth for your AI: "))
+                flag = True
+        except KeyboardInterrupt:
+            raise
+        except ValueError:
+            print("Integer input for depth required.")
+
+
+    playChess(depth)
