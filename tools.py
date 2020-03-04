@@ -2,6 +2,7 @@
 Chess Tools such as evaluating position/winning and losing go here
 """
 
+import logging
 import chess
 
 STRONGEST_INITIAL = 9999
@@ -24,9 +25,11 @@ def evaluatePosition(board):
 Checks if game ends
 """
 def gameEnd(board):
-    if(board.is_game_over() or board.is_sufficient_material() or board.can_claim_threefold_repetition()):
+    if(board.is_sufficient_material() or board.can_claim_threefold_repetition()):
+        logging.info("Draw Occured")
         return -1
     if(board.is_game_over()):
+        logging.info("Checkmate Occured")
         return 1
 
 """
@@ -41,23 +44,36 @@ def startMinimax(board, depth, colour):
 
     for move in legalMoves:
         move = chess.Move.from_uci(str(move))
+        logging.debug("Checking move: {}".format(move))
         board.push(move)
         minimaxValue = max(strongestMove, minimax(board, depth-1, -(STRONGEST_INITIAL+1), STRONGEST_INITIAL+1, not colour))
+        logging.debug("Move: {} produced a minimax value of: {}".format(move, minimaxValue))
+
         board.pop()
         if minimaxValue > strongestMove:
-            print("Minimax Value: ", minimaxValue)
+            logging.debug("Minimax value ({}) is greater than strongest move ({})".format(minimaxValue, strongestMove))
             strongestMove = minimaxValue
             strongestFinalMove = move
-            print("Optimal Score: ", str(strongestMove))
-            print("Optimal move: ", str(strongestFinalMove))
+            logging.info("Current optimal move is {}, it has a Minimax Value of {}".format(str(strongestFinalMove), minimaxValue))
+        else:
+            logging.debug("Minimax value ({}) is less than strongest move ({})".format(minimaxValue, strongestMove))
     return strongestFinalMove
 """
 Recursive minimax search to find best move
+
+Args:
+
+board: Python-Chess board objct
+depth: depth of search ex: 3 = 3 moves deep
+alpha: Alpha value of minimax search
+beta: Beta value of minimax search
+colour: Colour of search, white = True, black = false
 
 Return: best move
 """
 
 def minimax(board, depth, alpha, beta, colour):
+    logging.debug("Performing minimax with alpha: {} and beta {} on colour {}".format(alpha, beta, colour))
     if depth == 0: # base case for recusion
         return -evaluatePosition(board)
     legalMoves = board.legal_moves
