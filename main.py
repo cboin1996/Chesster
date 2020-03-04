@@ -3,12 +3,12 @@ Main starting point for the chess program
 """
 import tools
 import chess
-import sys
-
+import sys, os, json
+import li
 
 """
 Runs the main chess program
-depth: the depth of the AI's alpha-beta search
+arg: the depth of the AI's alpha-beta search
 Return: None
 """
 def playChess(depth):
@@ -29,7 +29,19 @@ def playChess(depth):
         computerMove = tools.startMinimax(board, depth, True)
         computerMove = chess.Move.from_uci(str(computerMove))
         board.push(computerMove)
+"""
+Runs the chess program using lichess
+arg: the depth of the AI's alpha-beta search
+Return: None
+"""
+def playLichess(depth):
+    with open(os.path.join(sys.path[0], 'secret.json'), 'r') as f:
+        settings = json.load(f)
+    print(settings)
 
+    while True:
+        games = li.getGames('ChessterZero', settings['token'])
+        print(next(games).end().board())
 """
 Get the depth of the AI, and run program with that depth
 """
@@ -49,5 +61,10 @@ if __name__=="__main__":
         except ValueError:
             print("Integer input for depth required.")
 
-
-    playChess(depth)
+    mode = input("Lichess or terminal (l/t): ")
+    if mode == 'l':
+        playLichess(depth)
+    elif mode == 't':
+        playChess(depth)
+    else:
+        print("You didn't follow my instructions so i quit as cb is too lazy to error catch rn.")
