@@ -4,6 +4,7 @@ Main starting point for the chess program
 import tools
 import chess
 import sys
+import logging
 
 
 """
@@ -17,11 +18,11 @@ def playChess(depth):
         print(board.unicode(invert_color=True))
         flag = False
         while not flag:
-            move = input("Make a move (e2e4): ")
+            move = input("Make a move (in the form e2e4): ")
             try:
                 flag = chess.Move.from_uci(move) in board.legal_moves
             except:
-                print("Invalid input. Try Again.")
+                logging.debug("{} is not a valid move".format(move))
         # TODO: check for valid move
         move = chess.Move.from_uci(str(move))
         board.push(move)
@@ -35,6 +36,7 @@ Get the depth of the AI, and run program with that depth
 """
 
 if __name__=="__main__":
+    logging.basicConfig(level=logging.INFO)
     flag = False
     while not flag:
         try:
