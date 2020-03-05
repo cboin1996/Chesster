@@ -34,7 +34,7 @@ Initiate minimax search
 
 Return: move to perform
 """
-def startMinimax(board, depth, colour):
+def startMinimax(board, depth, minimizing, color):
     legalMoves = board.legal_moves
     strongestMove = -STRONGEST_INITIAL
     strongestFinalMove = None
@@ -42,7 +42,13 @@ def startMinimax(board, depth, colour):
     for move in legalMoves:
         move = chess.Move.from_uci(str(move))
         board.push(move)
-        minimaxValue = max(strongestMove, minimax(board, depth-1, -(STRONGEST_INITIAL+1), STRONGEST_INITIAL+1, not colour))
+        minimaxValue = max(strongestMove,
+                           minimax(board,
+                                   depth-1,
+                                   -(STRONGEST_INITIAL+1),
+                                   STRONGEST_INITIAL+1,
+                                   not minimizing,
+                                   color))
         board.pop()
         if minimaxValue > strongestMove:
             print("Minimax Value: ", minimaxValue)
@@ -53,15 +59,24 @@ def startMinimax(board, depth, colour):
     return strongestFinalMove
 """
 Recursive minimax search to find best move
-
+args:
+    board: chess board object
+    depth: depth of the minimax algorithm
+    alpha: alpha param
+    beta: beta param
+    minimizing: max or minimized search
+    colour: chess colour True if white 
 Return: best move
 """
 
-def minimax(board, depth, alpha, beta, colour):
+def minimax(board, depth, alpha, beta, minimizing, color):
     if depth == 0: # base case for recusion
-        return -evaluatePosition(board)
+        if color == True:
+            return evaluatePosition(board)
+        else:
+            return -evaluatePosition(board)
     legalMoves = board.legal_moves
-    if colour:
+    if minimizing:
         strongestMove = -STRONGEST_INITIAL
     else:
         strongestMove = STRONGEST_INITIAL
@@ -69,11 +84,11 @@ def minimax(board, depth, alpha, beta, colour):
     for move in legalMoves:
         move = chess.Move.from_uci(str(move))
         board.push(move)
-        if colour:
-            strongestMove = max(strongestMove, minimax(board, depth-1, alpha, beta, not colour))
+        if minimizing:
+            strongestMove = max(strongestMove, minimax(board, depth-1, alpha, beta, not minimizing, color))
             alpha = max(alpha, strongestMove)
         else:
-            strongestMove = min(strongestMove, minimax(board, depth-1, alpha, beta, not colour))
+            strongestMove = min(strongestMove, minimax(board, depth-1, alpha, beta, not minimizing, color))
             beta = min(beta, strongestMove)
 
         board.pop()
