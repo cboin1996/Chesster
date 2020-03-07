@@ -3,12 +3,13 @@ Main starting point for the chess program
 """
 import tools
 import chess
-import sys
+import sys, os, json
+import li
 import logging
-
 
 """
 Runs the main chess program
+args:
 depth: the depth of the AI's alpha-beta search
 Return: None
 """
@@ -27,9 +28,65 @@ def playChess(depth):
         move = chess.Move.from_uci(str(move))
         board.push(move)
         print(board.unicode(invert_color=True))
-        computerMove = tools.startMinimax(board, depth, True)
+        computerMove = tools.startMinimax(board, depth, True, False)
         computerMove = chess.Move.from_uci(str(computerMove))
         board.push(computerMove)
+"""
+Runs the chess program using lichess
+arg:
+    depth: the depth of the AI's alpha-beta search
+    seek: automatically find a game
+Return: None
+"""
+def playLichess(depth, seek=False):
+    with open(os.path.join(sys.path[0], 'secret.json'), 'r') as f:
+        settings = json.load(f)
+    print(settings)
+
+    lichessAPI = li.API("1.1.4", settings['token'], "https://lichess.org", "ChessterZero")
+
+    while True:
+        # check for new challenges
+        eventResponse = lichessAPI.eventStream()
+        if seek == True:
+            seekResponse = lichessAPI.seekChallenge(settings['gamesToSeek'])
+            line = next(seekResponse.iter_lines())
+            if line:
+                seekEvent = json.loads(line.decode('utf-8'))
+                print("Seek returns: {}".format(seekEvent))
+
+        lines = eventResponse.iter_lines()
+        line = next(lines)
+        if line: # check for content in first event returned
+            event = json.loads(line.decode('utf-8'))
+
+        try:
+            print("Challenge accepted from: {}".format(event['challenge']['challenger']['name']))
+            lichessAPI.acceptChallenge(event['challenge']['id'])
+        except:
+            pass
+
+        response = lichessAPI.gamesPlaying().json()
+
+        for game in response['nowPlaying']:
+            board = chess.Board(fen=game['fen'])
+            if game['color'] == 'black':
+                board.turn = chess.BLACK
+                color = False
+            else:
+                board.turn = chess.WHITE
+                color = True
+
+            if game['isMyTurn'] == True:
+                print('') # escapes the no newline prints from before
+                move = tools.startMinimax(board, depth, True, color)
+                if str(move) == "No":
+                    for move in board.legal_moves:
+                        break
+                move = chess.Move.from_uci(str(move))
+                response = lichessAPI.makeMove(game['fullId'], move)
+            else:
+                print('\rWaiting for my turn... ', end='')
 
 """
 Get the depth of the AI, and run program with that depth
@@ -51,5 +108,12 @@ if __name__=="__main__":
         except ValueError:
             print("Integer input for depth required.")
 
-
-    playChess(depth)
+    mode = input("Lichess or terminal (l/t): ")
+    if mode == 'l':
+        playLichess(depth)
+    if mode == 'ls':
+        playLichess(depth, True)
+    elif mode == 't':
+        playChess(depth)
+    else:
+        print("You didn't follow my instructions so i quit as cb is too lazy to error catch rn.")
