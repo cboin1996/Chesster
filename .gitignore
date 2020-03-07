@@ -1,0 +1,5 @@
+# Do not track these folders:
+__pycache__/
+# Do not track these files (Maybe logging files idk)
+secret.json
+# Do not track with file extension
