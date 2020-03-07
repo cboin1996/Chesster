@@ -28,7 +28,7 @@ def playChess(depth):
         move = chess.Move.from_uci(str(move))
         board.push(move)
         print(board.unicode(invert_color=True))
-        computerMove = tools.startMinimax(board, depth, True)
+        computerMove = tools.startMinimax(board, depth, True, False)
         computerMove = chess.Move.from_uci(str(computerMove))
         board.push(computerMove)
 """

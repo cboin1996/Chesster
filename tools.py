@@ -37,7 +37,7 @@ Initiate minimax search
 
 Return: move to perform
 """
-def startMinimax(board, depth, minimizing, color):
+def startMinimax(board, depth, minimizing, colour):
     legalMoves = board.legal_moves
     strongestMove = -STRONGEST_INITIAL
     strongestFinalMove = None
@@ -52,7 +52,7 @@ def startMinimax(board, depth, minimizing, color):
                                    -(STRONGEST_INITIAL+1),
                                    STRONGEST_INITIAL+1,
                                    not minimizing,
-                                   color))
+                                   colour))
         logging.debug("Move: {} produced a minimax value of: {}".format(move, minimaxValue))
         board.pop()
         if minimaxValue > strongestMove:
@@ -80,7 +80,7 @@ Return: best move
 def minimax(board, depth, alpha, beta, minimizing, colour):
     logging.debug("Performing minimax with alpha: {} and beta {} on colour {}".format(alpha, beta, colour))
     if depth == 0: # base case for recusion
-        if color == True:
+        if colour == True:
             return evaluatePosition(board)
         else:
             return -evaluatePosition(board)
@@ -94,10 +94,10 @@ def minimax(board, depth, alpha, beta, minimizing, colour):
         move = chess.Move.from_uci(str(move))
         board.push(move)
         if minimizing:
-            strongestMove = max(strongestMove, minimax(board, depth-1, alpha, beta, not minimizing, color))
+            strongestMove = max(strongestMove, minimax(board, depth-1, alpha, beta, not minimizing, colour))
             alpha = max(alpha, strongestMove)
         else:
-            strongestMove = min(strongestMove, minimax(board, depth-1, alpha, beta, not minimizing, color))
+            strongestMove = min(strongestMove, minimax(board, depth-1, alpha, beta, not minimizing, colour))
             beta = min(beta, strongestMove)
 
         board.pop()
