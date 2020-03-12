@@ -81,9 +81,9 @@ def minimax(board, depth, alpha, beta, minimizing, colour):
     logging.debug("Performing minimax with alpha: {} and beta {} on colour {}".format(alpha, beta, colour))
     if depth == 0: # base case for recusion
         if colour == True:
-            return evaluatePosition(board)
+            return evaluatePosition(board)# + 0.1*len([move for move in board.legal_moves])
         else:
-            return -evaluatePosition(board)
+            return -evaluatePosition(board)# - 0.1* len([move for move in board.legal_moves])
     legalMoves = board.legal_moves
     if minimizing:
         strongestMove = -STRONGEST_INITIAL
@@ -104,3 +104,11 @@ def minimax(board, depth, alpha, beta, minimizing, colour):
         if beta <= alpha:
             return strongestMove
     return strongestMove
+
+def boardToArray(board):
+     pieceList = str(board).replace("/","").split("\n")
+     newList = []
+     for item in pieceList:
+         newList.append(item.split(" "))
+     print(newList)
+     return newList
