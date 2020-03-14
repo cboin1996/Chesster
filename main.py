@@ -80,7 +80,7 @@ def playLichess(depth, seek=False):
             if game['isMyTurn'] == True:
                 print('') # escapes the no newline prints from before
                 move = tools.startMinimax(board, depth, True, color)
-                if str(move) == "No":
+                if move is None:
                     for move in board.legal_moves:
                         break
                 move = chess.Move.from_uci(str(move))
