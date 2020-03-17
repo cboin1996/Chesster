@@ -88,6 +88,7 @@ def playLichess(depth, seek=False):
             else:
                 print('\rWaiting for my turn... ', end='')
 
+
 """
 Get the depth of the AI, and run program with that depth
 """

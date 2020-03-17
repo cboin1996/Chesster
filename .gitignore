@@ -1,5 +1,15 @@
 # Do not track these folders:
 __pycache__/
+activate
+deactivate
+next_generation
+play_data
+venv
 # Do not track these files (Maybe logging files idk)
+logs
 secret.json
+.DS_Store
+test3.pgn
+__init__.py
 # Do not track with file extension
+.pyc
