@@ -6,6 +6,8 @@ def evalKingSafety(board):
 
 
 def evalTotalPieceMobility(board):
+    for whiteSpaceOnBoard >= 1
+    print
     pass
 
 def evalAttackingEnemyKing(board):
