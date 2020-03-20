@@ -4,6 +4,7 @@ activate
 deactivate
 next_generation
 play_data
+tensorflow
 venv
 # Do not track these files (Maybe logging files idk)
 logs

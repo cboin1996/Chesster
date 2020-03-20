@@ -6,6 +6,10 @@ from deep_learning import lib
 from deep_learning.config import Config, PlayWithHumanConfig
 from deep_learning.environment import Chess, Victor
 
+from requests.exceptions import ChunkedEncodingError, ConnectionError, HTTPError, ReadTimeout
+from urllib3.exceptions import ProtocolError
+from http.client import BadStatusLine
+
 import logging
 
 import chess
@@ -119,27 +123,40 @@ def play_game(game_id, lichessAPI, config: Config, cur=None):
             binary_chunk = next(lines)
         except(StopIteration):
             break
+        try:
+            gev_json = json.loads(binary_chunk.decode('utf-8')) if binary_chunk else None
+            gev_type = gev_json["type"] if gev_json else None
 
-        gev_json = json.loads(binary_chunk.decode('utf-8')) if binary_chunk else None
-        gev_type = gev_json["type"] if gev_json else None
+            if gev_type == "gameState":
+                moves = gev_json['moves'].split(' ')
 
-        if gev_type == "gameState":
-            moves = gev_json['moves'].split(' ')
+                if is_engines_turn(moves, game_json):
+                    env.make_move(moves[-1]) # catch up the board to lichess
+                    env.print_pretty()
 
-            if is_engines_turn(moves, game_json):
-                env.make_move(moves[-1]) # catch up the board to lichess
-                env.print_pretty()
-
-                if not env.over(): # check for game end.
-                    logger.debug("simulating")
-                    action = player.action(env)
-                    logger.debug(f"New Move: {action}")
-                    response = lichessAPI.makeMove(game_id, action)
-                    env.make_move(action) # update the board with pushed lichess move
+                    if not env.over(): # check for game end.
+                        logger.debug("simulating")
+                        action = player.action(env)
+                        logger.debug(f"New Move: {action}")
+                        response = lichessAPI.makeMove(game_id, action)
+                        env.make_move(action) # update the board with pushed lichess move
 
 
-        elif gev_type == "chatLine":
-            print(gev_json)
+            elif gev_type == "chatLine":
+                print(gev_json)
+
+        except (HTTPError, ReadTimeout, BadStatusLine, ChunkedEncodingError, ConnectionError, ProtocolError) as e:
+            logger.debug(f"error detected {e}")
+            current_games = lichessAPI.gamesPlaying()
+            for game in current_games:
+                if game["gameId"] == game_id:
+                    game_over = False
+                    break
+
+            if not game_over:
+                continue
+            else:
+                break
     logger.debug("Game has ended.")
 
 def is_engines_turn(moves, game_json):

@@ -48,7 +48,7 @@ class TrainerConfig:
         self.cleaning_processes = 5 # RAM explosion...
         self.vram_frac = 1.0
         self.batch_size = 384 # tune this to your gpu memory
-        self.dataset_size = 225000
+        self.dataset_size = 300000
         self.start_total_steps = 0
         self.save_model_steps = 25
         self.load_data_steps = 100
@@ -63,7 +63,7 @@ class PlayWithHumanConfig:
 
     """
     def __init__(self):
-        self.simulation_num_per_move = 50
+        self.simulation_num_per_move = 1200
         self.threads_multiplier = 2
         self.c_puct = 1 # lower  = prefer mean action value
         self.noise_eps = 0

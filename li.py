@@ -48,21 +48,29 @@ class API:
         self.session.headers.update(self.headers)
 
 
-    def gamesPlaying(self, stream=False):
+    def li_api_get(self, path):
+        url = self.baseURL + path
+        resp = self.session.get(url, timeout=2)
+        resp.raise_for_status()
+        return resp.json()
+
+    def li_api_post(self, path, data=None):
+        url = self.baseURL + path
+        resp = self.session.post(url, data=data)
+        resp.raise_for_status()
+        return resp.json()
+
+    def gamesPlaying(self):
         """
         Find the current games being played
         args:
             stream: optional parameter to stream the request
         Returns: response
         """
-        url = self.baseURL+api_urls["playing"]
-        resp = self.session.get(url, stream=stream)
-        return resp
+        return self.li_api_get(api_urls["playing"])
 
     def resign(self, gameId: str):
-        url = self.baseURL+api_urls["resign"]
-        resp = self.session.post(url, data={"gameId":gameId})
-        return resp
+        return self.li_api_post(api_urls["resign"], data={"gameId":gameId})
 
     def makeMove(self, gameId, move, data=None):
         """
@@ -73,9 +81,7 @@ class API:
             data: data to post if needed
         Returns: response
         """
-        url = self.baseURL+api_urls['move'].format(gameId, move)
-        resp = self.session.post(url, data=data)
-        return resp
+        return self.li_api_post(api_urls['move'].format(gameId, move), data)
 
     def eventStream(self):
         """
@@ -92,8 +98,7 @@ class API:
             challengeId: challenger id given by lichess
         Returns: response
         """
-        url = self.baseURL + api_urls['accept'].format(challengeId)
-        return self.session.post(url)
+        return self.li_api_post(api_urls['accept'].format(challengeId))
 
     def gameStream(self, game_id):
         url = self.baseURL + api_urls['stream'].format(game_id)
