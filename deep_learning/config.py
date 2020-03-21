@@ -18,6 +18,9 @@ class ModelConfig:
     v_filter_size = 4
     v_kernel_size = 1
 
+class LichessConfig:
+    max_games = 3
+
 class PlayerConfig:
     """
     Config for the player module and self_play
@@ -63,7 +66,7 @@ class PlayWithHumanConfig:
 
     """
     def __init__(self):
-        self.simulation_num_per_move = 1200
+        self.simulation_num_per_move = 100
         self.threads_multiplier = 2
         self.c_puct = 1 # lower  = prefer mean action value
         self.noise_eps = 0
@@ -167,6 +170,7 @@ class Config:
         self.resource = Resources()
         self.play_data = PlayDataConfig()
         self.trainer = TrainerConfig()
+        self.liconf = LichessConfig()
 
 
         self.labels = Config.labels

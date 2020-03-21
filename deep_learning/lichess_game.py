@@ -10,11 +10,13 @@ from requests.exceptions import ChunkedEncodingError, ConnectionError, HTTPError
 from urllib3.exceptions import ProtocolError
 from http.client import BadStatusLine
 
+from multiprocessing import Manager, Pool, Process, Lock
+from collections import deque
+from concurrent.futures import ProcessPoolExecutor
+
 import logging
 
 import chess
-
-from multiprocessing import Manager
 
 import json
 
@@ -30,14 +32,13 @@ class LichessPlayer:
 
     def __init__(self, config:Config, mode: str):
         self.config = config
+        self.liconf = self.config.liconf
         self.model = self.load_best_model()
         self.m = Manager()
-        self.mode = mode
-        # the pipes from this model being launched
         self.cur_pipes = self.model.get_pipes(self.config.player_conf.search_threads)
+        self.mode = mode
         self.settings = self.load_settings(config.resource.lichess_settings_path)
         self.lichessAPI = li.API("1.1.4", self.settings['token'], "https://lichess.org", USER_NAME)
-        self.last_moves = []
 
     def start(self):
         if self.mode == 'lic':
@@ -67,7 +68,6 @@ class LichessPlayer:
             elif event['type'] == "gameStart":
                 play_game(event['game']['id'], self.lichessAPI, config=self.config, cur=self.cur_pipes)
 
-
     def event_stream(self):
         """
         Streams for events and returns the event found
@@ -89,7 +89,7 @@ class LichessPlayer:
         except:
             pass
 
-def play_game(game_id, lichessAPI, config: Config, cur=None):
+def play_game(game_id, lichessAPI, config: Config, cur=None, event_queue=None):
     """
         Plays the game of chess against the user.  If the game falls behind.. i.e. the model is restarted
         the game with auto catch up.
@@ -158,6 +158,8 @@ def play_game(game_id, lichessAPI, config: Config, cur=None):
             else:
                 break
     logger.debug("Game has ended.")
+    if event_queue is not None:
+        event_queue.put_nowait({"type" : "local_game_done"})
 
 def is_engines_turn(moves, game_json):
     """
