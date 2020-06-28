@@ -47,52 +47,70 @@ class API:
                          }
         self.session.headers.update(self.headers)
 
-    """
-    Find the current games being played
-    args:
-        stream: optional parameter to stream the request
-    Returns: response
-    """
-    def gamesPlaying(self, stream=False):
-        url = self.baseURL+api_urls["playing"]
-        resp = self.session.get(url, stream=stream)
-        return resp
 
-    """
-    Makes a chess move
-    args:
-        gameId: lichess game id
-        move: move to make
-        data: data to post if needed
-    Returns: response
-    """
-    def makeMove(self, gameId, move, data=None):
-        url = self.baseURL+api_urls['move'].format(gameId, move)
+    def li_api_get(self, path):
+        url = self.baseURL + path
+        resp = self.session.get(url, timeout=2)
+        resp.raise_for_status()
+        return resp.json()
+
+    def li_api_post(self, path, data=None):
+        url = self.baseURL + path
         resp = self.session.post(url, data=data)
-        return resp
-    """
-    Opens an event stream
-    Returns: response
-    """
+        resp.raise_for_status()
+        return resp.json()
+
+    def gamesPlaying(self):
+        """
+        Find the current games being played
+        args:
+            stream: optional parameter to stream the request
+        Returns: response
+        """
+        return self.li_api_get(api_urls["playing"])
+
+    def resign(self, gameId: str):
+        return self.li_api_post(api_urls["resign"], data={"gameId":gameId})
+
+    def makeMove(self, gameId, move, data=None):
+        """
+        Makes a chess move
+        args:
+            gameId: lichess game id
+            move: move to make
+            data: data to post if needed
+        Returns: response
+        """
+        return self.li_api_post(api_urls['move'].format(gameId, move), data)
+
     def eventStream(self):
+        """
+        Opens an event stream
+        Returns: response
+        """
         url = self.baseURL + api_urls['stream_event']
         return requests.get(url, headers=self.headers, stream=True)
-    """
-    Accepts a challenge from a user
-    args:
-        challengeId: challenger id given by lichess
-    Returns: response
-    """
+
     def acceptChallenge(self, challengeId):
-        url = self.baseURL + api_urls['accept'].format(challengeId)
-        return self.session.post(url)
-    """
-    (Broken) Seeks new challenges on lichess
-    args:
-        gameParams: seek parameters defined by user
-    Returns: request response
-    """
+        """
+        Accepts a challenge from a user
+        args:
+            challengeId: challenger id given by lichess
+        Returns: response
+        """
+        return self.li_api_post(api_urls['accept'].format(challengeId))
+
+    def gameStream(self, game_id):
+        url = self.baseURL + api_urls['stream'].format(game_id)
+        return requests.get(url, headers=self.headers, stream=True)
+
     def seekChallenge(self, gameParams):
+        """
+        (Broken) Seeks new challenges on lichess
+        args:
+            gameParams: seek parameters defined by user
+        Returns: request response
+        """
         url = self.baseURL + api_urls['seek']
         seekHeaders = dict(self.headers) # create new copy of the headers dict for this post only
         seekHeaders['Content-Type'] = "application/x-www-form-urlencoded"
