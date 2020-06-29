@@ -10,13 +10,13 @@ from deep_learning.agent.model_api import ChessAPI
 
 import tensorflow as tf
 
-from keras.engine.topology import Input
-from keras.engine.training import Model
-from keras.layers.convolutional import Conv2D
-from keras.layers.core import Activation, Dense, Flatten
-from keras.layers.merge import Add
-from keras.layers.normalization import BatchNormalization
-from keras.regularizers import l2
+from tensorflow.keras import Input
+from tensorflow.keras import Model
+from tensorflow.keras.layers import Conv2D
+from tensorflow.keras.layers import Dense, Flatten, Activation
+from tensorflow.keras.layers import Add
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.regularizers import l2
 
 
 logger = getLogger(__name__)
@@ -113,13 +113,14 @@ class ChessModel:
             with open(weights_path, "rb") as f:
                 m.update(f.read())
             return m.hexdigest()
-    """
-    Saves the model.
-        arguments:
-            config_path: path to configuration file
-            weight_path: path to the weights
-    """
+
     def save(self, config_path, weights_path):
+        """
+        Saves the model.
+            arguments:
+                config_path: path to configuration file
+                weight_path: path to the weights
+        """
         logger.debug("saved model to {}".format(config_path))
         with open(config_path, 'wt') as f:
             json.dump(self.model.get_config(), f)
@@ -133,7 +134,7 @@ class ChessModel:
             with open(config_path, 'rt') as f:
                 self.model = Model.from_config(json.load(f))
             self.model.load_weights(weights_path)
-            self.model._make_predict_function()
+            self.model.make_predict_function()
             self.digest = self.fetch_digest(weights_path)
             logger.debug("loaded model digest = {}".format(self.digest))
             return True

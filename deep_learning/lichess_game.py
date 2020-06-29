@@ -122,6 +122,7 @@ def play_game(game_id, lichessAPI, config: Config, cur=None, event_queue=None):
         try:
             binary_chunk = next(lines)
         except(StopIteration):
+            logger.debug("Reached end of stream")
             break
         try:
             gev_json = json.loads(binary_chunk.decode('utf-8')) if binary_chunk else None
@@ -148,8 +149,10 @@ def play_game(game_id, lichessAPI, config: Config, cur=None, event_queue=None):
         except (HTTPError, ReadTimeout, BadStatusLine, ChunkedEncodingError, ConnectionError, ProtocolError) as e:
             logger.debug(f"error detected {e}")
             current_games = lichessAPI.gamesPlaying()
+            game_over = True # continue game upon weird exceptions from disconnections
             for game in current_games:
-                if game["gameId"] == game_id:
+                logger.debug(f"Game: {game} | game_id: {game_id}")
+                if game == game_id:
                     game_over = False
                     break
 

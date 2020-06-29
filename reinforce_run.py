@@ -6,7 +6,7 @@ from deep_learning import lichess_game
 import multiprocessing as mp
 import sys
 from logging import StreamHandler, basicConfig, DEBUG, getLogger, Formatter
-import logging
+import logging 
 def setup_logger(log_filename):
     format_str = '%(asctime)s@%(name)s %(levelname)s # %(message)s'
     basicConfig(filename=log_filename, level=DEBUG, format=format_str)
@@ -32,8 +32,9 @@ if __name__=="__main__":
     sys.setrecursionlimit(10000)
 
     config = Config()
-    setup_logger(config.resource.main_log_path)
     config.resource.create_directories()
+    setup_logger(config.resource.main_log_path)
+
 
     if arg.cmd == "lic":
         lichess_game.start(config, mode=arg.cmd)
