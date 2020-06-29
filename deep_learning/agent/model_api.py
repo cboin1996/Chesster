@@ -39,8 +39,7 @@ class ChessAPI:
                     data.append(pipe.recv())
                     result_pipes.append(pipe)
 
-            # data = np.asarray(data, dtype=np.float32)
-            tens_data = tf.convert_to_tensor(data, dtype=tf.float32)
-            policy_array, value_array = self.model.model.predict_on_batch(tens_data)
+            data = np.asarray(data, dtype=np.float32)
+            policy_array, value_array = self.model.model.predict_on_batch(data)
             for pipe, p, v in zip(result_pipes, policy_array, value_array):
                 pipe.send((p, float(v)))
