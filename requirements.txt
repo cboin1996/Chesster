@@ -1,4 +1,5 @@
 numpy
-tensorflow
+tensorflow-gpu==2.2
 python-chess
 pyperclip
+requests

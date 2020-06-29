@@ -6,7 +6,7 @@ from deep_learning import lichess_game
 import multiprocessing as mp
 import sys
 from logging import StreamHandler, basicConfig, DEBUG, getLogger, Formatter
-import logging
+import logging 
 def setup_logger(log_filename):
     format_str = '%(asctime)s@%(name)s %(levelname)s # %(message)s'
     basicConfig(filename=log_filename, level=DEBUG, format=format_str)
