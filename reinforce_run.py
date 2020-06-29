@@ -32,8 +32,9 @@ if __name__=="__main__":
     sys.setrecursionlimit(10000)
 
     config = Config()
-    setup_logger(config.resource.main_log_path)
     config.resource.create_directories()
+    setup_logger(config.resource.main_log_path)
+
 
     if arg.cmd == "lic":
         lichess_game.start(config, mode=arg.cmd)
