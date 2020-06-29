@@ -32,7 +32,7 @@ class PlayerConfig:
         self.tau_decay_rate = 0.99 # temperature
         self.virtual_loss = 3
         self.search_threads = 16
-        self.simulation_num_per_move = 100 # numbers of sims in MCTS
+        self.simulation_num_per_move = 800 # numbers of sims in MCTS
         self.resign_threshold = -0.8 # score to resign play at.
         self.min_resign_turn = 5 # number of turns before resigning is allowed
         self.noise_eps = 0.25
@@ -51,7 +51,7 @@ class TrainerConfig:
         self.cleaning_processes = 5 # RAM explosion...
         self.vram_frac = 1.0
         self.batch_size = 384 # tune this to your gpu memory
-        self.dataset_size = 300000
+        self.dataset_size = 100000
         self.start_total_steps = 0
         self.save_model_steps = 25
         self.load_data_steps = 100
@@ -66,7 +66,7 @@ class PlayWithHumanConfig:
 
     """
     def __init__(self):
-        self.simulation_num_per_move = 1200
+        self.simulation_num_per_move = 1800
         self.threads_multiplier = 2
         self.c_puct = 1 # lower  = prefer mean action value
         self.noise_eps = 0
@@ -106,7 +106,7 @@ class EvaluateConfig:
         self.game_num = 13 # number of games to play before updating model
         self.replace_rate = 0.55
         self.player_conf = PlayerConfig()
-        self.player_conf.simulation_num_per_move = 100
+        self.player_conf.simulation_num_per_move = 200
         self.player_conf.thinking_loop = 1
         self.player_conf.c_puct = 1 # lower  = prefer mean action value
         self.player_conf.tau_decay_rate = 0.6 # I need a better distribution...
