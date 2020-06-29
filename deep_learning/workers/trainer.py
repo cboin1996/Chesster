@@ -16,8 +16,8 @@ from deep_learning.lib.model_ops import load_best_model_weight
 from deep_learning.environment import canon_input_planes, is_black_turn, testeval
 from deep_learning.config import Config
 
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import TensorBoard
+from keras.optimizers import Adam
+from keras.callbacks import TensorBoard
 
 logger = getLogger(__name__)
 

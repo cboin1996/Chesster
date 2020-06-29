@@ -10,13 +10,13 @@ from deep_learning.agent.model_api import ChessAPI
 
 import tensorflow as tf
 
-from tensorflow.keras import Input
-from tensorflow.keras import Model
-from tensorflow.keras.layers import Conv2D
-from tensorflow.keras.layers import Dense, Flatten, Activation
-from tensorflow.keras.layers import Add
-from tensorflow.keras.layers import BatchNormalization
-from tensorflow.keras.regularizers import l2
+from keras.engine.topology import Input
+from keras.engine.training import Model
+from keras.layers.convolutional import Conv2D
+from keras.layers.core import Activation, Dense, Flatten
+from keras.layers.merge import Add
+from keras.layers.normalization import BatchNormalization
+from keras.regularizers import l2
 
 
 logger = getLogger(__name__)
