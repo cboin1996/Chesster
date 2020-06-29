@@ -6,6 +6,7 @@ next_generation
 play_data
 tensorflow
 venv
+.vs
 # Do not track these files (Maybe logging files idk)
 logs
 secret.json
