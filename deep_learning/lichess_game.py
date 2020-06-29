@@ -150,9 +150,9 @@ def play_game(game_id, lichessAPI, config: Config, cur=None, event_queue=None):
             logger.debug(f"error detected {e}")
             current_games = lichessAPI.gamesPlaying()
             game_over = True # continue game upon weird exceptions from disconnections
-            for game in current_games:
-                logger.debug(f"Game: {game} | game_id: {game_id}")
-                if game == game_id:
+            for game in current_games["nowPlaying"]:
+                logger.debug(f"Game: {game} | game_id: {game_id}") 
+                if game["gameId"] == game_id: # lichess API returns 'gameId' in response for 'nowPlaying'
                     game_over = False
                     break
 
